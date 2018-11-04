@@ -1,0 +1,10 @@
+@import '~antd/dist/antd.css';
+
+h1 {
+  color: green;
+}
+
+body {
+  text-align: center;
+  margin: auto;
+}
