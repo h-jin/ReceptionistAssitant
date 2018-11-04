@@ -23,6 +23,7 @@ function* addRecord(action) {
 }
 function* updateRecord(action) {
     yield takeEvery("UPDATE_RECORD", function* (action) {
+        console.log(action.payload);
         yield call(request, { url: "/api/update/", options: { method: "POST", body: JSON.stringify(action.payload) } });
         const user = yield call(request, { url: "/api/getUsers" });
         yield put({ type: "FETCH_NAMES", payload: user });

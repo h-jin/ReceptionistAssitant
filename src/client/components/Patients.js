@@ -42,19 +42,22 @@ export default class Patients extends Component {
     }
     addRecord = () => {
         const { dispatch } = this.props;
-        dispatch({ type: "ADD_EMPTY_RECORD", payload: { name: "mark", phone: "", status: "waiting", date: moment().format("YYYY-MM-DD hh:mm:ss") } });
+        dispatch({ type: "ADD_EMPTY_RECORD", payload: { name: "mark", phone: "", status: "waiting", section: "appointment", date: moment().format("YYYY-MM-DD hh:mm:ss") } });
     }
     updateRecordState = (record, header, newValue) => {
         const updatedRecord = { ...record, [header]: newValue };
         const { dispatch } = this.props;
+        this.setState({ updatedRecord });
         dispatch({ type: "UPDATE_LOCAL_RECORD", payload: updatedRecord });
     }
     updateRecord = record => {
         const { dispatch } = this.props;
+        const { updatedRecord } = this.state;
         console.log(record);
+        console.log(updatedRecord);
         const { id } = record;
         // id is generated automatically by database, if it is not exist it is new added record
-        if (id) dispatch({ type: "UPDATE_RECORD", payload: record });
+        if (id) dispatch({ type: "UPDATE_RECORD", payload: updatedRecord });
         else dispatch({ type: "ADD_RECORD", payload: record });
     }
     deleteRecord = id => {
