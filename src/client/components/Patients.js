@@ -1,8 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import moment from 'moment';
-import { Table, Button, Input } from 'antd';
+import { Table, Button, Input, Layout } from 'antd';
 import TopMenu from "components/TopMenu";
 import '../app.css';
+
+const { Header, Content } = Layout;
 
 const parsedTableData = (patientList) => {
     const tableHeaders = Object.keys(patientList[0]);
@@ -32,7 +34,7 @@ const parsedTableData = (patientList) => {
 }
 export default class Patients extends Component {
     state = {
-        updatedRecord: {}
+        updatedRecord: null
     }
     componentDidMount() {
         const { dispatch } = this.props;
@@ -40,28 +42,29 @@ export default class Patients extends Component {
     }
     addRecord = () => {
         const { dispatch } = this.props;
-        dispatch({ type: "ADD_EMPTY_RECORD", payload: { name: "mark", phone: "", status: "waiting", date: "" } });
+        dispatch({ type: "ADD_EMPTY_RECORD", payload: { name: "mark", phone: "", status: "waiting", date: moment().format("YYYY-MM-DD hh:mm:ss") } });
     }
     updateRecordState = (record, header, newValue) => {
         const updatedRecord = { ...record, [header]: newValue };
-        this.setState({ updatedRecord });
-    }
-    updateRecord = () => {
         const { dispatch } = this.props;
-        const { updatedRecord } = this.state;
-        console.log(updatedRecord);
-        const { id } = updatedRecord;
+        dispatch({ type: "UPDATE_LOCAL_RECORD", payload: updatedRecord });
+    }
+    updateRecord = record => {
+        const { dispatch } = this.props;
+        console.log(record);
+        const { id } = record;
         // id is generated automatically by database, if it is not exist it is new added record
-        if (id) dispatch({ type: "UPDATE_RECORD", payload: updatedRecord });
-        else dispatch({ type: "ADD_RECORD", payload: updatedRecord });
+        if (id) dispatch({ type: "UPDATE_RECORD", payload: record });
+        else dispatch({ type: "ADD_RECORD", payload: record });
     }
     deleteRecord = id => {
+        console.log(id);
         const { dispatch } = this.props;
         dispatch({ type: "DELETE_RECORD", payload: id });
     }
     render() {
         const { patientList } = this.props;
-        // console.log(patientList);
+        console.log(patientList);
         const tableHeaders = patientList.length > 0 ? Object.keys(patientList[0]) : [];
         const columns = tableHeaders.map(header =>
             (
@@ -84,7 +87,7 @@ export default class Patients extends Component {
         {
             title: "Action",
             key: "update",
-            render: () => <a onClick={() => this.updateRecord()}>Update</a>
+            render: (_, record) => <a onClick={() => this.updateRecord(record)}>Update</a>
         },
         {
             title: "Action",
@@ -98,15 +101,24 @@ export default class Patients extends Component {
 
         return (
             <Fragment>
-                <TopMenu />
-                <Table
-                    columns={columnsWithAction}
-                    dataSource={data}
+                <Layout>
+                    <Header>
+                        {/*<div style={{ width: 120, height: 31 }}>
+                            <img src="/public/React-icon.png" />
+                        </div>*/}
+                        <TopMenu />
+                    </Header>
+                    <Content style={{ padding: '0 50px' }}>
+                        <Table
+                            columns={columnsWithAction}
+                            dataSource={data}
                     /*onRow={({ id }) => ({
                         onMouseEnter: () => this.changeSelectedRecordId(id)
                     })}*/ />
-                <Button type="primary" onClick={() => this.addRecord()}>Add</Button>
-            </Fragment>
+                        <Button type="primary" onClick={() => this.addRecord()}>Add</Button>
+                    </Content>
+                </Layout>
+            </Fragment >
         );
     }
 }

@@ -31,9 +31,9 @@ app.get("/api/getUsers", function (req, res) {
 
 app.post("/api/add/", function (req, res) {
     const { body: { name, phone, status, date } } = req;
-    client.query(`INSERT INTO emergency(name, phone, status, date) VALUES('${name}', '${phone}','${status}', '${date}') RETURNING *`).then(data => {
-        // console.log(res.send(data.rows));
-        // res.send(data.rows);
+    client.query(`INSERT INTO emergency(name, phone, status, date) VALUES('${name}', '${phone}','${status}', '${date}') RETURNING name`).then(data => {
+        // console.log(res.send(data));
+        res.send(data);
     });
 })
 

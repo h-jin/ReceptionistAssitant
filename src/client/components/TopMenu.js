@@ -17,6 +17,8 @@ class TopMenu extends Component {
                 onClick={this.handleClick}
                 selectedKeys={[picked]}
                 mode="horizontal"
+                theme="dark"
+                style={{ lineHeight: '64px' }}
             >
                 {
                     options.map((option, index) => (
