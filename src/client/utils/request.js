@@ -1,17 +1,16 @@
-const request = ({ url, method }) => {
-
-    return fetch(url, {
-        method,
+const request = ({ url, options }) => {
+    const commonOptions = {
         headers: {
-            "Content-Type": "application/json; charset=utf-8",
+            "Content-Type": "application/json; charset=utf-8"
         }
-        // body: JSON.stringify({ data: "test" })
-    })
-        .then(res => res.json())
-        .then(data => {
-            return data;
-        }).catch(e => {
-            console.log(e);
+    }
+    const combinedOptions = { ...commonOptions, ...options };
+    return fetch(url, combinedOptions)
+        .then(response => {
+            if (combinedOptions.method === "DELETE") {
+                return response.text();
+            }
+            return response.json();
         });
 }
 

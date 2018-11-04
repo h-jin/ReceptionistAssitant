@@ -25,10 +25,15 @@ app.use(express.static('dist'));
 app.get("/api/getUsers", function (req, res) {
     // res.send(console.log(req.body));
     client.query(`SELECT array_to_json(array_agg(r)) FROM (SELECT * FROM emergency) r`).then(data => {
-        console.log(data);
+        //  console.log(data);
         const dataArr = data.rows[0].array_to_json;
         res.send(dataArr);
     });
+})
+
+app.delete("/api/delete/:id", function (req, res) {
+    const { id } = req.params;
+    res.send(console.log(id));
 })
 
 /*app.post('/api/connectString', (req, res) => {

@@ -1,9 +1,8 @@
 import "regenerator-runtime/runtime";
 import { createStore, applyMiddleware } from 'redux'
 import createSagaMiddleware from 'redux-saga'
-
 import reducer from 'reducers/reducer'
-import saga from 'sagas/saga'
+import sagas from 'sagas/sagas'
 
 // create the saga middleware
 const sagaMiddleware = createSagaMiddleware()
@@ -14,5 +13,5 @@ const store = createStore(
 )
 
 // then run the saga
-sagaMiddleware.run(saga)
+sagaMiddleware.run(sagas)
 export default store;
