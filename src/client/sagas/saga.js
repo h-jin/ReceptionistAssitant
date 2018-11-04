@@ -15,16 +15,35 @@ function* fetchUser(action) {
         yield put({ type: "USER_FETCH_FAILED", message: e.message });
     }*/
 }
+function* addRecord(action) {
+    yield takeEvery("ADD_RECORD", function* (action) {
+        console.log(action.payload);
+        yield call(request, { url: "/api/add/", options: { method: "POST", body: JSON.stringify(action.payload) } });
+        const user = yield call(request, { url: "/api/getUsers", method: "GET" });
+        yield put({ type: "FETCH_NAMES", payload: user });
+    });
+}
+function* updateRecord(action) {
+    yield takeEvery("UPDATE_RECORD", function* (action) {
+        yield call(request, { url: "/api/update/", options: { method: "POST", body: JSON.stringify(action.payload) } });
+        const user = yield call(request, { url: "/api/getUsers", method: "GET" });
+        yield put({ type: "FETCH_NAMES", payload: user });
+    });
+}
+
 function* deleteRecord(action) {
     yield takeEvery("DELETE_RECORD", function* (action) {
         const id = action.payload;
         // delete a record, then get updated record list
         yield call(request, { url: `/api/delete/${id}`, options: { method: "DELETE" } });
-        yield call(fetchUser);
+        const user = yield call(request, { url: "/api/getUsers", method: "GET" });
+        yield put({ type: "FETCH_NAMES", payload: user });
     });
 }
 
 export {
     fetchUser,
-    deleteRecord
+    addRecord,
+    deleteRecord,
+    updateRecord
 }

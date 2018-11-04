@@ -23,17 +23,32 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('dist'));
 
 app.get("/api/getUsers", function (req, res) {
-    // res.send(console.log(req.body));
     client.query(`SELECT array_to_json(array_agg(r)) FROM (SELECT * FROM emergency) r`).then(data => {
-        //  console.log(data);
         const dataArr = data.rows[0].array_to_json;
         res.send(dataArr);
     });
 })
 
+app.post("/api/add/", function (req, res) {
+    const { body: { name, phone, status, date } } = req;
+    client.query(`INSERT INTO emergency(name, phone, status, date) VALUES('${name}', '${phone}','${status}', '${date}') RETURNING *`).then(data => {
+        // console.log(res.send(data.rows));
+        // res.send(data.rows);
+    });
+})
+
+app.post("/api/update/", function (req, res) {
+    const { body: { id, name, phone, status, date } } = req;
+    client.query(`UPDATE emergency SET name='${name}', phone='${phone}', status='${status}', date='${date}' WHERE id=${id} RETURNING *`).then(data => {
+        res.send(data.rows);
+    });
+})
+
 app.delete("/api/delete/:id", function (req, res) {
     const { id } = req.params;
-    res.send(console.log(id));
+    client.query(`DELETE FROM emergency WHERE id=${id}`).then(data => {
+        res.send(console.log(data));
+    });
 })
 
 /*app.post('/api/connectString', (req, res) => {
