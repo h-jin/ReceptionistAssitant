@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-import { Table, Button, Input, Layout } from 'antd';
+import { Table, Button, Input, Layout, notification } from 'antd';
 import TopMenu from "components/TopMenu";
 import '../app.css';
 
@@ -50,6 +50,11 @@ export default class Patients extends Component {
         });
         this.setState({ waitingList: updatedWaitingList });
         dispatch({ type: "UPDATE_RECORD", payload: { ...record, status: "served" } });
+        notification.open({
+            message: "Update Status",
+            description: "Status updated to served",
+            duration: 1
+        });
     }
     render() {
         const { waitingList: patientList } = this.state;

@@ -113,9 +113,6 @@ export default class Patients extends Component {
         return (
             <Layout>
                 <Header>
-                    {/*<div style={{ width: 120, height: 31 }}>
-                            <img src="/public/React-icon.png" />
-                        </div>*/}
                     <TopMenu />
                 </Header>
                 <Content style={{ padding: '0 50px' }}>
@@ -124,9 +121,7 @@ export default class Patients extends Component {
                         dataSource={data}
                         style={{ whiteSpace: 'nowrap' }}
                         scroll={{ x: 'fit-content' }}
-                    /*onRow={({ id }) => ({
-                        onMouseEnter: () => this.changeSelectedRecordId(id)
-                    })}*/ />
+                    />
                     <Button type="primary"
                         style={{
                             display: "flex",
