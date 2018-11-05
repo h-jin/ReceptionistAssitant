@@ -1,8 +1,8 @@
 import defaultMenuState from "./defaultMenuState";
-import defaultEmergencyState from "./defaultEmergencyState";
+import defaultListState from "./defaultListState";
 
 const state = {
     menus: defaultMenuState,
-    emergency: defaultEmergencyState
+    list: defaultListState
 }
 export default state;

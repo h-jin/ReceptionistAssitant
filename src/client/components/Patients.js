@@ -1,7 +1,10 @@
+import "lodash";
 import React, { Component, Fragment } from 'react';
 import moment from 'moment';
-import { Table, Button, Input, Layout } from 'antd';
+import omit from "underscore";
+import { Table, Button, Input, Layout, DatePicker, Select } from 'antd';
 import TopMenu from "components/TopMenu";
+import SectionSelector from "components/SectionSelector";
 import '../app.css';
 
 const { Header, Content } = Layout;
@@ -48,26 +51,34 @@ export default class Patients extends Component {
         const updatedRecord = { ...record, [header]: newValue };
         const { dispatch } = this.props;
         this.setState({ updatedRecord });
-        dispatch({ type: "UPDATE_LOCAL_RECORD", payload: updatedRecord });
+        dispatch({ type: "UPDATE_LOCAL_RECORD", payload: _.omit(updatedRecord, "key") });
     }
     updateRecord = record => {
         const { dispatch } = this.props;
         const { updatedRecord } = this.state;
-        console.log(record);
-        console.log(updatedRecord);
         const { id } = record;
         // id is generated automatically by database, if it is not exist it is new added record
         if (id) dispatch({ type: "UPDATE_RECORD", payload: updatedRecord });
         else dispatch({ type: "ADD_RECORD", payload: record });
     }
     deleteRecord = id => {
-        console.log(id);
         const { dispatch } = this.props;
         dispatch({ type: "DELETE_RECORD", payload: id });
     }
+    onSelectedTime = (value, record) => {
+        const updatedRecord = { ...record, date: moment(value).format("YYYY-MM-DD hh:mm:ss") };
+        const { dispatch } = this.props;
+        this.setState({ updatedRecord });
+        dispatch({ type: "UPDATE_LOCAL_RECORD", payload: _.omit(updatedRecord, "key") });
+    }
+    handleSectionChange = (value, record) => {
+        const updatedRecord = { ...record, section: value };
+        const { dispatch } = this.props;
+        this.setState({ updatedRecord });
+        dispatch({ type: "UPDATE_LOCAL_RECORD", payload: _.omit(updatedRecord, "key") });
+    }
     render() {
         const { patientList } = this.props;
-        console.log(patientList);
         const tableHeaders = patientList.length > 0 ? Object.keys(patientList[0]) : [];
         const columns = tableHeaders.map(header =>
             (
@@ -76,11 +87,23 @@ export default class Patients extends Component {
                     dataIndex: header,
                     key: header,
                     render: (text, record, index) => (
-                        <Input
-                            defaultValue={text}
-                            disabled={header === "id" || header === "status" ? true : false}
-                            onChange={e => this.updateRecordState(record, header, e.target.value)}
-                        />
+
+                        header === "date" ?
+                            <DatePicker
+                                defaultValue={moment(record.date)}
+                                showTime
+                                format="YYYY-MM-DD HH:mm:ss"
+                                placeholder="Select Time"
+                                onOk={(value) => this.onSelectedTime(value, record)} /> : (
+                                header === "section" ?
+                                    <SectionSelector defaultValue={record.section} handleSectionChange={(value) => this.handleSectionChange(value, record)} />
+                                    :
+                                    <Input
+                                        defaultValue={text}
+                                        disabled={header === "id" || header === "status" ? true : false}
+                                        onChange={e => this.updateRecordState(record, header, e.target.value)}
+                                    />
+                            )
                     )
                 }
             )
@@ -103,25 +126,23 @@ export default class Patients extends Component {
         }) : [];
 
         return (
-            <Fragment>
-                <Layout>
-                    <Header>
-                        {/*<div style={{ width: 120, height: 31 }}>
+            <Layout>
+                <Header>
+                    {/*<div style={{ width: 120, height: 31 }}>
                             <img src="/public/React-icon.png" />
                         </div>*/}
-                        <TopMenu />
-                    </Header>
-                    <Content style={{ padding: '0 50px' }}>
-                        <Table
-                            columns={columnsWithAction}
-                            dataSource={data}
+                    <TopMenu />
+                </Header>
+                <Content style={{ padding: '0 50px' }}>
+                    <Table
+                        columns={columnsWithAction}
+                        dataSource={data}
                     /*onRow={({ id }) => ({
                         onMouseEnter: () => this.changeSelectedRecordId(id)
                     })}*/ />
-                        <Button type="primary" onClick={() => this.addRecord()}>Add</Button>
-                    </Content>
-                </Layout>
-            </Fragment >
+                    <Button type="primary" onClick={() => this.addRecord()}>Add</Button>
+                </Content>
+            </Layout>
         );
     }
 }

@@ -5,7 +5,7 @@ import { Menu } from 'antd';
 import '../app.css';
 
 class TopMenu extends Component {
-    state = { current: "emergency" };
+    state = { current: "list" };
     handleClick = (e) => {
         const { dispatch } = this.props;
         dispatch({ type: "UPDATE_MENU", payload: e.key });

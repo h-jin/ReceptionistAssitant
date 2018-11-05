@@ -1,5 +1,5 @@
 const defaultMenuState = {
-    options: ["emergency", "priority"],
-    picked: "emergency"
+    options: ["list", "priority"],
+    picked: "list"
 }
 export default defaultMenuState;

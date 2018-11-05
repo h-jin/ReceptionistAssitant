@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import moment from 'moment';
 import { Table, Button, Input, Layout } from 'antd';
 import TopMenu from "components/TopMenu";
@@ -68,6 +68,16 @@ export default class Patients extends Component {
         }
 
     }
+    updateStatus = (record) => {
+        const { dispatch } = this.props;
+        const { waitingList } = this.state;
+        const updatedWaitingList = waitingList.map(elem => {
+            const { id } = elem;
+            return id === record.id ? { ...elem, status: "served" } : elem;
+        });
+        this.setState({ waitingList: updatedWaitingList });
+        dispatch({ type: "UPDATE_RECORD", payload: { ...record, status: "served" } });
+    }
     render() {
         const { waitingList: patientList } = this.state;
         const tableHeaders = patientList.length > 0 ? Object.keys(patientList[0]) : [];
@@ -81,25 +91,30 @@ export default class Patients extends Component {
             )
 
         );
+        const columnsWithAction = [...columns,
+        {
+            title: "Action",
+            key: "updateStatus",
+            render: (_, record) => <a onClick={() => this.updateStatus(record)}>Update Status</a>
+        }
+        ];
         const data = Array.isArray(patientList) ? patientList.map((patient, index) => {
             const { date } = patient;
             return { ...patient, date: moment(date).format("YYYY-MM-DD hh:mm:ss"), key: index }
         }) : [];
 
         return (
-            <Fragment>
-                <Layout>
-                    <Header>
-                        <TopMenu />
-                    </Header>
-                    <Content style={{ padding: '0 50px' }}>
-                        <Table
-                            columns={columns}
-                            dataSource={data}
-                        />
-                    </Content>
-                </Layout>
-            </Fragment >
+            <Layout>
+                <Header>
+                    <TopMenu />
+                </Header>
+                <Content style={{ padding: '0 50px' }}>
+                    <Table
+                        columns={columnsWithAction}
+                        dataSource={data}
+                    />
+                </Content>
+            </Layout>
         );
     }
 }
