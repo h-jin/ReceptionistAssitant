@@ -23,7 +23,7 @@ class TopMenu extends Component {
                 {
                     options.map((option, index) => (
                         <Menu.Item key={option}>
-                            <Link to={index === 0 ? "/" : `/${option}`}>{option} </Link>
+                            <Link to={index === 0 ? "/" : `/${option}`}>{option.toUpperCase()} </Link>
                         </Menu.Item>
                     ))
                 }

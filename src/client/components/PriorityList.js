@@ -6,33 +6,6 @@ import '../app.css';
 
 const { Header, Content } = Layout;
 
-const parsedTableData = (patientList) => {
-    const tableHeaders = Object.keys(patientList[0]);
-    const columns = tableHeaders.map(header =>
-        (
-            {
-                title: header,
-                dataIndex: header,
-                key: header,
-                render: (text, record, index) => (
-                    <Input
-                        defaultValue={text}
-                        onMouseLeave={e => console.log(e.target.value)}
-                    />
-                )
-            }
-        )
-
-    );
-    const columnsWithAction = [...columns, {
-        title: "Action",
-        key: "action",
-        render: (text, record) => <a onClick={() => console.log(record)}>Delete</a>
-    }];
-    const data = patientList.map((patient, index) => ({ ...patient, key: index }));
-    return { data, columns: columnsWithAction };
-}
-
 export default class Patients extends Component {
     state = {
         waitingList: [] // maintain a priority list with 10 people
@@ -84,7 +57,7 @@ export default class Patients extends Component {
         const columns = tableHeaders.map(header =>
             (
                 {
-                    title: header,
+                    title: header.toUpperCase(),
                     dataIndex: header,
                     key: header,
                 }
@@ -93,7 +66,7 @@ export default class Patients extends Component {
         );
         const columnsWithAction = [...columns,
         {
-            title: "Action",
+            title: "ACTION",
             key: "updateStatus",
             render: (_, record) => <a onClick={() => this.updateStatus(record)}>Update Status</a>
         }
@@ -112,6 +85,8 @@ export default class Patients extends Component {
                     <Table
                         columns={columnsWithAction}
                         dataSource={data}
+                        style={{ whiteSpace: 'nowrap' }}
+                        scroll={{ x: 'fit-content' }}
                     />
                 </Content>
             </Layout>

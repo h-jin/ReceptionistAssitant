@@ -2,39 +2,21 @@ import "lodash";
 import React, { Component, Fragment } from 'react';
 import moment from 'moment';
 import omit from "underscore";
-import { Table, Button, Input, Layout, DatePicker, Select } from 'antd';
+import { Table, Button, Input, Layout, DatePicker, notification } from 'antd';
 import TopMenu from "components/TopMenu";
 import SectionSelector from "components/SectionSelector";
 import '../app.css';
 
 const { Header, Content } = Layout;
 
-const parsedTableData = (patientList) => {
-    const tableHeaders = Object.keys(patientList[0]);
-    const columns = tableHeaders.map(header =>
-        (
-            {
-                title: header,
-                dataIndex: header,
-                key: header,
-                render: (text, record, index) => (
-                    <Input
-                        defaultValue={text}
-                        onMouseLeave={e => console.log(e.target.value)}
-                    />
-                )
-            }
-        )
+const openNotification = (message, description) => {
+    notification.open({
+        message: message,
+        description: description,
+        duration: 1
+    });
+};
 
-    );
-    const columnsWithAction = [...columns, {
-        title: "Action",
-        key: "action",
-        render: (text, record) => <a onClick={() => console.log(record)}>Delete</a>
-    }];
-    const data = patientList.map((patient, index) => ({ ...patient, key: index }));
-    return { data, columns: columnsWithAction };
-}
 export default class Patients extends Component {
     state = {
         updatedRecord: null
@@ -58,12 +40,15 @@ export default class Patients extends Component {
         const { updatedRecord } = this.state;
         const { id } = record;
         // id is generated automatically by database, if it is not exist it is new added record
-        if (id) dispatch({ type: "UPDATE_RECORD", payload: updatedRecord });
-        else dispatch({ type: "ADD_RECORD", payload: record });
+        if (id && updatedRecord === null) return; //user did not change anything
+        if (id) dispatch({ type: "UPDATE_RECORD", payload: { ...updatedRecord, date: moment(updatedRecord.date).format("YYYY-MM-DD hh:mm:ss") } });
+        else dispatch({ type: "ADD_RECORD", payload: { ...record, date: moment(record.date).format("YYYY-MM-DD hh:mm:ss") } });
+        openNotification("Update", "Record is updated")
     }
     deleteRecord = id => {
         const { dispatch } = this.props;
         dispatch({ type: "DELETE_RECORD", payload: id });
+        openNotification("Delete", "Record is deleted")
     }
     onSelectedTime = (value, record) => {
         const updatedRecord = { ...record, date: moment(value).format("YYYY-MM-DD hh:mm:ss") };
@@ -83,7 +68,7 @@ export default class Patients extends Component {
         const columns = tableHeaders.map(header =>
             (
                 {
-                    title: header,
+                    title: header.toUpperCase(),
                     dataIndex: header,
                     key: header,
                     render: (text, record, index) => (
@@ -111,12 +96,12 @@ export default class Patients extends Component {
         );
         const columnsWithAction = [...columns,
         {
-            title: "Action",
+            title: "ACTION",
             key: "update",
             render: (_, record) => <a onClick={() => this.updateRecord(record)}>Update</a>
         },
         {
-            title: "Action",
+            title: "ACTION",
             key: "delete",
             render: (text, { id }) => <a onClick={() => this.deleteRecord(id)}>Delete</a>
         }];
@@ -137,10 +122,16 @@ export default class Patients extends Component {
                     <Table
                         columns={columnsWithAction}
                         dataSource={data}
+                        style={{ whiteSpace: 'nowrap' }}
+                        scroll={{ x: 'fit-content' }}
                     /*onRow={({ id }) => ({
                         onMouseEnter: () => this.changeSelectedRecordId(id)
                     })}*/ />
-                    <Button type="primary" onClick={() => this.addRecord()}>Add</Button>
+                    <Button type="primary"
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between"
+                        }} onClick={() => this.addRecord()}>Add</Button>
                 </Content>
             </Layout>
         );
