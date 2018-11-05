@@ -12,8 +12,7 @@ const { Header, Content } = Layout;
 const openNotification = (message, description) => {
     notification.open({
         message: message,
-        description: description,
-        duration: 1
+        description: description
     });
 };
 
@@ -28,6 +27,7 @@ export default class Patients extends Component {
     addRecord = () => {
         const { dispatch } = this.props;
         dispatch({ type: "ADD_EMPTY_RECORD", payload: { name: "mark", phone: "", status: "waiting", section: "appointment", date: moment().format("YYYY-MM-DD hh:mm:ss") } });
+        openNotification("Add", "Please edit the record and click update to add it to database");
     }
     updateRecordState = (record, header, newValue) => {
         const updatedRecord = { ...record, [header]: newValue };
@@ -47,8 +47,10 @@ export default class Patients extends Component {
     }
     deleteRecord = id => {
         const { dispatch } = this.props;
-        dispatch({ type: "DELETE_RECORD", payload: id });
-        openNotification("Delete", "Record is deleted")
+        if (id) { // if the record exist in database
+            dispatch({ type: "DELETE_RECORD", payload: id });
+            openNotification("Delete", "Record is deleted");
+        } else openNotification("Delete", "The record has not added to database yet, please refresh the page, it will gone.Yes this part is werid, will change it in future")
     }
     onSelectedTime = (value, record) => {
         const updatedRecord = { ...record, date: moment(value).format("YYYY-MM-DD hh:mm:ss") };
