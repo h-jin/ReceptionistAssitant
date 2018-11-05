@@ -22,7 +22,7 @@ Database is postgresql (version 10.5)
 2.  create a empty directory or any exist diretory you want; open a terminal
 3.  under the path of this directory, run command
     `git clone https://github.com/h-jin/ReceptionistAssitant.git`
-4.  run command `npm install`  to install all package dependencies
+4.  under directory ReceptionistAssitan, run command `npm install`  to install all package dependencies
 5.  run command `npm run client` to start client
 6.  Database backupfile is in `src/client/database/backup.txt ` 
     store database from backup file. Here is a link of instruction about how to restore database                       `http://suite.opengeo.org/docs/latest/dataadmin/pgDBAdmin/backup.html`
